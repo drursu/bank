@@ -8,14 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/transaction")
-public class TransactionController {
+@RequestMapping("/account")
+public class AccountController {
 
     @Autowired
     private ModelMapper modelMapper;
@@ -30,7 +29,7 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
-    public Optional<AccountDTO> getAccountById(@PathVariable("accountId") Long id) {
+    public Optional<AccountDTO> getAccountById(@PathVariable("id") Long id) {
 
         Optional<Account> account = accountService.getAccountById(id);
         AccountDTO accountDTO = modelMapper.map(account, AccountDTO.class);
@@ -63,4 +62,5 @@ public class TransactionController {
         accountService.deleteAccount(id);
         return new ResponseEntity<>("Account deleted !", HttpStatus.OK);
     }
+
 }

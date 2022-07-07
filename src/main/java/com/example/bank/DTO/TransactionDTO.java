@@ -1,30 +1,19 @@
-package com.example.bank.entity;
+package com.example.bank.DTO;
 
+import com.example.bank.entity.Account;
+import com.example.bank.entity.CustomerPurchase;
 import com.example.bank.enums.TransactionType;
-import com.sun.istack.NotNull;
 import lombok.Data;
-
-import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@Entity
-public class Transaction {
+public class TransactionDTO {
 
-    @Id
     private Long transactionId;
-    @NotNull
     private Date creationDate;
-    @NotNull
     private Float transactionAmount;
     private String otherDetails;
-    @ManyToOne
-    @JoinColumn(name = "accountId")
     private Account account;
-    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-    @OneToOne
-    @JoinColumn(name = "customerPurchaseId")
     private CustomerPurchase customerPurchase;
-
 }

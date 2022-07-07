@@ -3,28 +3,28 @@ package com.example.bank.entity;
 import com.example.bank.enums.TransactionType;
 import com.sun.istack.NotNull;
 import lombok.Data;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
 @Entity
-public class Transaction {
+public class Account {
 
     @Id
-    private Long transactionId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long accountId;
+    @NotNull
+    private String accountName;
     @NotNull
     private Date creationDate;
-    @NotNull
-    private Float transactionAmount;
     private String otherDetails;
     @ManyToOne
-    @JoinColumn(name = "accountId")
-    private Account account;
+    @JoinColumn(name="customerId")
+    private Customer customer;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-    @OneToOne
-    @JoinColumn(name = "customerPurchaseId")
-    private CustomerPurchase customerPurchase;
+    @OneToOne(mappedBy = "account")
+    private Transaction transactions;
 
 }
