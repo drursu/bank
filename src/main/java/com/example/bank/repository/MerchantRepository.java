@@ -1,12 +1,12 @@
 package com.example.bank.repository;
 
-import com.example.bank.entity.Transaction;
+import com.example.bank.entity.Merchant;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TransactionRepository extends CrudRepository <Transaction,Long>{
+public interface MerchantRepository extends CrudRepository <Merchant,Long> {
     @Override
-    List<Transaction> findAll();
+    List<Merchant> findAll();
 }

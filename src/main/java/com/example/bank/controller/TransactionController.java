@@ -1,43 +1,64 @@
 package com.example.bank.controller;
 
+import com.example.bank.DTO.TransactionDTO;
 import com.example.bank.entity.Transaction;
-import com.example.bank.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.example.bank.service.Impl.TransactionServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-@Controller
-
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/transactions")
 public class TransactionController {
 
-    @Autowired
-    TransactionRepository transactionRepository;
+    private final ModelMapper modelMapper;
 
-    @RequestMapping("/profile")
-    @ResponseBody
+    private final TransactionServiceImpl transactionService;
 
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("ceva");
-    }
+    @GetMapping
+    public List<TransactionDTO> getAllTransactions() {
 
-    @GetMapping("/transactions")
-    @ResponseBody
-    public Iterable<Transaction> getAllTransactions() {
-
-        return transactionRepository.findAll();
+        return transactionService.getAllTransactions().stream().map(transaction -> modelMapper.map(transaction, TransactionDTO.class)).collect(Collectors.toList());
 
     }
 
+    @GetMapping("/{id}")
+    public TransactionDTO getTransactionById(@PathVariable("id") Long id) {
 
+        Transaction transaction = transactionService.getTransactionById(id);
+        TransactionDTO transactionDTO = modelMapper.map(transaction, TransactionDTO.class);
+
+        return transactionDTO;
+    }
+
+    @PostMapping
+    public TransactionDTO saveOrUpdateTransaction(@RequestBody TransactionDTO transactionDTO) {
+
+        Transaction transactionPostRequest = modelMapper.map(transactionDTO, Transaction.class);
+        Transaction transactionPostResponse = transactionService.saveOrUpdateTransaction(transactionPostRequest);
+        TransactionDTO transactionDTOResponse = modelMapper.map(transactionPostResponse, TransactionDTO.class);
+
+        return transactionDTOResponse;
+    }
+
+    @PutMapping
+    public TransactionDTO updateTransaction(@RequestBody TransactionDTO transactionDTO) {
+
+        Transaction transactionPostRequest = modelMapper.map(transactionDTO, Transaction.class);
+        Transaction transactionPostResponse = transactionService.updateTransaction(transactionPostRequest);
+        TransactionDTO transactionDTOResponse = modelMapper.map(transactionPostResponse, TransactionDTO.class);
+
+        return transactionDTOResponse;
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteTransaction(@PathVariable(name = "id") Long id) {
+
+        transactionService.deleteTransaction(id);
+
+        return "Transaction deleted !";
+    }
 }

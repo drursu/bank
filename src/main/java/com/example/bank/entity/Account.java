@@ -5,24 +5,24 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
-public class Transaction {
+public class Account {
 
     @Id
     @GeneratedValue
     private Long id;
+    private String accountName;
     @CreationTimestamp
     private Date creationDate;
-    private Float transactionAmount;
     private String otherDetails;
     @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @JoinColumn(name="customer_id")
+    private Customer customer;
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-    @OneToOne
-    @JoinColumn(name = "customerPurchaseId")
-    private CustomerPurchase customerPurchase;
+    @OneToMany(mappedBy = "account")
+    private List<Transaction> transactions;
 }
