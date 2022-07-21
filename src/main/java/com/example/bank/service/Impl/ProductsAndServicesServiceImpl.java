@@ -1,41 +1,60 @@
 package com.example.bank.service.Impl;
 
-import com.example.bank.entity.Account;
 import com.example.bank.entity.ProductsAndServices;
-import com.example.bank.repository.AccountRepository;
+import com.example.bank.exception.ResourceNotDeletedException;
+import com.example.bank.exception.ResourceNotFoundException;
+import com.example.bank.exception.ResourceNotSavedException;
 import com.example.bank.repository.ProductsAndServicesRepository;
 import com.example.bank.service.Interface.ProductsAndServicesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class ProductsAndServicesServiceImpl implements ProductsAndServicesService {
-    @Autowired
-    ProductsAndServicesRepository productsAndServicesRepository;
+
+    private final ProductsAndServicesRepository productsAndServicesRepository;
 
     public List<ProductsAndServices> getAllProductsAndServices() {
         return productsAndServicesRepository.findAll();
     }
 
-    public Optional<ProductsAndServices> getProductsAndServicesById(Long id) {
-        return productsAndServicesRepository.findById(id);
+    public ProductsAndServices getProductsAndServicesById(Long id) {
+
+        return productsAndServicesRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Product or Service with id: " + id + " does not exist!"));
     }
 
     public ProductsAndServices saveOrUpdateProductsAndServices(ProductsAndServices productsAndServices) {
-        productsAndServicesRepository.save(productsAndServices);
+
+        try {
+            productsAndServicesRepository.save(productsAndServices);
+
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Product or Service could not be saved!");
+        }
+
         return productsAndServices;
     }
 
     public void deleteProductsAndServices(Long id) {
-        productsAndServicesRepository.deleteById(id);
+
+        try {
+            productsAndServicesRepository.deleteById(id);
+        } catch (ResourceNotDeletedException exception) {
+            throw new ResourceNotDeletedException("Product or Service could not be deleted!");
+        }
     }
 
     public ProductsAndServices updateProductsAndServices(ProductsAndServices productsAndServices) {
-        productsAndServicesRepository.save(productsAndServices);
+
+        try {
+            productsAndServicesRepository.save(productsAndServices);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Product or Service could not be updated!");
+        }
+
         return productsAndServices;
     }
 }

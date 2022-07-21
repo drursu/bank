@@ -3,24 +3,22 @@ package com.example.bank.controller;
 import com.example.bank.DTO.MerchantDTO;
 import com.example.bank.entity.Merchant;
 import com.example.bank.service.Impl.MerchantServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/merchant")
+@RequiredArgsConstructor
+@RequestMapping("/merchants")
 public class MerchantController {
 
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    MerchantServiceImpl merchantService;
+
+    private final ModelMapper modelMapper;
+
+    private final MerchantServiceImpl merchantService;
 
     @GetMapping
     public List<MerchantDTO> getAllMerchants() {
@@ -30,37 +28,37 @@ public class MerchantController {
     }
 
     @GetMapping("/{id}")
-    public Optional<MerchantDTO> getMerchantById(@PathVariable("id") Long id) {
+    public MerchantDTO getMerchantById(@PathVariable("id") Long id) {
 
-        Optional<Merchant> merchant = merchantService.getMerchantById(id);
+        Merchant merchant = merchantService.getMerchantById(id);
         MerchantDTO merchantDTO = modelMapper.map(merchant, MerchantDTO.class);
 
-        return Optional.ofNullable(merchantDTO);
+        return merchantDTO;
     }
 
     @PostMapping
-    public ResponseEntity<MerchantDTO> saveMerchant(@RequestBody MerchantDTO merchantDTO) {
+    public MerchantDTO saveMerchant(@RequestBody MerchantDTO merchantDTO) {
 
-        Merchant merchantPostRequest = modelMapper.map(merchantDTO,Merchant.class);
+        Merchant merchantPostRequest = modelMapper.map(merchantDTO, Merchant.class);
         Merchant merchantPostResponse = merchantService.saveOrUpdateMerchant(merchantPostRequest);
-        MerchantDTO merchantDTOResponse = modelMapper.map(merchantPostResponse,MerchantDTO.class);
+        MerchantDTO merchantDTOResponse = modelMapper.map(merchantPostResponse, MerchantDTO.class);
 
-        return new ResponseEntity<>(merchantDTOResponse, HttpStatus.CREATED);
+        return merchantDTOResponse;
     }
 
     @PutMapping
-    public ResponseEntity<MerchantDTO> updateMerchant(@RequestBody MerchantDTO merchantDTO) {
+    public MerchantDTO updateMerchant(@RequestBody MerchantDTO merchantDTO) {
 
         Merchant merchantPostRequest = modelMapper.map(merchantDTO, Merchant.class);
         Merchant merchantPostResponse = merchantService.updateMerchant(merchantPostRequest);
-        MerchantDTO merchantDTOResponse = modelMapper.map(merchantPostResponse,MerchantDTO.class);
+        MerchantDTO merchantDTOResponse = modelMapper.map(merchantPostResponse, MerchantDTO.class);
 
-        return ResponseEntity.ok().body(merchantDTOResponse);
+        return merchantDTOResponse;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMerchant(@PathVariable(name = "id") Long id){
+    public String deleteMerchant(@PathVariable(name = "id") Long id) {
         merchantService.deleteMerchant(id);
-        return new ResponseEntity<>("Merchant deleted !", HttpStatus.OK);
+        return "Merchant deleted !";
     }
 }

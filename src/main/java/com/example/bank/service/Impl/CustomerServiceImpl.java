@@ -1,41 +1,62 @@
 package com.example.bank.service.Impl;
 
-import com.example.bank.entity.Account;
 import com.example.bank.entity.Customer;
-import com.example.bank.repository.AccountRepository;
+import com.example.bank.exception.ResourceNotDeletedException;
+import com.example.bank.exception.ResourceNotFoundException;
+import com.example.bank.exception.ResourceNotSavedException;
 import com.example.bank.repository.CustomerRepository;
 import com.example.bank.service.Interface.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-    @Autowired
-    CustomerRepository customerRepository;
+
+    private final CustomerRepository customerRepository;
 
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
 
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
+    public Customer getCustomerById(Long id) {
+
+        return customerRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Customer with id: " + id + " could not be found!")
+        );
     }
 
     public Customer saveOrUpdateCustomer(Customer customer) {
-        customerRepository.save(customer);
+
+        try {
+            customerRepository.save(customer);
+
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Customer could not be saved!");
+
+        }
+
         return customer;
     }
 
     public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+
+        try {
+            customerRepository.deleteById(id);
+        } catch (ResourceNotDeletedException exception) {
+            throw new ResourceNotDeletedException("Customer could not be deleted!");
+        }
     }
 
     public Customer updateCustomer(Customer customer) {
-        customerRepository.save(customer);
+
+        try {
+            customerRepository.save(customer);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Customer could not be updated!");
+        }
+
         return customer;
     }
 }

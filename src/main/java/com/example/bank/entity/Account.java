@@ -1,30 +1,28 @@
 package com.example.bank.entity;
 
 import com.example.bank.enums.TransactionType;
-import com.sun.istack.NotNull;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long accountId;
-    @NotNull
+    @GeneratedValue
+    private Long id;
     private String accountName;
-    @NotNull
+    @CreationTimestamp
     private Date creationDate;
     private String otherDetails;
     @ManyToOne
-    @JoinColumn(name="customerId")
+    @JoinColumn(name="customer_id")
     private Customer customer;
-    @NotNull
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-    @OneToOne(mappedBy = "account")
-    private Transaction transactions;
-
+    @OneToMany(mappedBy = "account")
+    private List<Transaction> transactions;
 }

@@ -1,66 +1,64 @@
 package com.example.bank.controller;
 
-import com.example.bank.DTO.AccountDTO;
-import com.example.bank.entity.Account;
-import com.example.bank.service.Impl.AccountServiceImpl;
+import com.example.bank.DTO.TransactionDTO;
+import com.example.bank.entity.Transaction;
+import com.example.bank.service.Impl.TransactionServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/transaction")
+@RequiredArgsConstructor
+@RequestMapping("/transactions")
 public class TransactionController {
 
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    AccountServiceImpl accountService;
+    private final ModelMapper modelMapper;
+
+    private final TransactionServiceImpl transactionService;
 
     @GetMapping
-    public List<AccountDTO> getAllAccounts() {
+    public List<TransactionDTO> getAllTransactions() {
 
-        return accountService.getAllAccounts().stream().map(account -> modelMapper.map(account, AccountDTO.class)).collect(Collectors.toList());
+        return transactionService.getAllTransactions().stream().map(transaction -> modelMapper.map(transaction, TransactionDTO.class)).collect(Collectors.toList());
 
     }
 
     @GetMapping("/{id}")
-    public Optional<AccountDTO> getAccountById(@PathVariable("accountId") Long id) {
+    public TransactionDTO getTransactionById(@PathVariable("id") Long id) {
 
-        Optional<Account> account = accountService.getAccountById(id);
-        AccountDTO accountDTO = modelMapper.map(account, AccountDTO.class);
+        Transaction transaction = transactionService.getTransactionById(id);
+        TransactionDTO transactionDTO = modelMapper.map(transaction, TransactionDTO.class);
 
-        return Optional.ofNullable(accountDTO);
+        return transactionDTO;
     }
 
     @PostMapping
-    public ResponseEntity<AccountDTO> saveAccount(@RequestBody AccountDTO accountDTO) {
+    public TransactionDTO saveOrUpdateTransaction(@RequestBody TransactionDTO transactionDTO) {
 
-        Account accountPostRequest = modelMapper.map(accountDTO,Account.class);
-        Account accountPostResponse = accountService.saveOrUpdateAccount(accountPostRequest);
-        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse,AccountDTO.class);
+        Transaction transactionPostRequest = modelMapper.map(transactionDTO, Transaction.class);
+        Transaction transactionPostResponse = transactionService.saveOrUpdateTransaction(transactionPostRequest);
+        TransactionDTO transactionDTOResponse = modelMapper.map(transactionPostResponse, TransactionDTO.class);
 
-        return new ResponseEntity<>(accountDTOResponse, HttpStatus.CREATED);
+        return transactionDTOResponse;
     }
 
     @PutMapping
-    public ResponseEntity<AccountDTO> updateAccount(@RequestBody AccountDTO accountDTO) {
+    public TransactionDTO updateTransaction(@RequestBody TransactionDTO transactionDTO) {
 
-        Account accountPostRequest = modelMapper.map(accountDTO,Account.class);
-        Account accountPostResponse = accountService.updateAccount(accountPostRequest);
-        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse,AccountDTO.class);
+        Transaction transactionPostRequest = modelMapper.map(transactionDTO, Transaction.class);
+        Transaction transactionPostResponse = transactionService.updateTransaction(transactionPostRequest);
+        TransactionDTO transactionDTOResponse = modelMapper.map(transactionPostResponse, TransactionDTO.class);
 
-        return ResponseEntity.ok().body(accountDTOResponse);
+        return transactionDTOResponse;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable(name = "id") Long id){
-        accountService.deleteAccount(id);
-        return new ResponseEntity<>("Account deleted !", HttpStatus.OK);
+    public String deleteTransaction(@PathVariable(name = "id") Long id) {
+
+        transactionService.deleteTransaction(id);
+
+        return "Transaction deleted !";
     }
 }

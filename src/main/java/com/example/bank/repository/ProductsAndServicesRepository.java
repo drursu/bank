@@ -1,10 +1,8 @@
 package com.example.bank.repository;
 
-import com.example.bank.entity.Merchant;
 import com.example.bank.entity.ProductsAndServices;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository

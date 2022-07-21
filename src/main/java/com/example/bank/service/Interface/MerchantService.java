@@ -1,19 +1,17 @@
 package com.example.bank.service.Interface;
 
 import com.example.bank.entity.Merchant;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface MerchantService {
-    public List<Merchant> getAllMerchants();
+    List<Merchant> getAllMerchants();
 
-    public Optional<Merchant> getMerchantById(Long id);
+    Merchant getMerchantById(Long id);
 
-    public Merchant saveOrUpdateMerchant(Merchant merchant);
+    Merchant saveOrUpdateMerchant(Merchant merchant);
 
-    public void deleteMerchant(Long id);
+    void deleteMerchant(Long id);
 
-    public Merchant updateMerchant(Merchant merchant);
+    Merchant updateMerchant(Merchant merchant);
 
 }

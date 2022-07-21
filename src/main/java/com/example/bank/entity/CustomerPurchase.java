@@ -1,8 +1,7 @@
 package com.example.bank.entity;
 
-import com.sun.istack.NotNull;
 import lombok.Data;
-
+import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -12,19 +11,15 @@ import java.util.List;
 public class CustomerPurchase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long customerPurchaseId;
-    @NotNull
+    @GeneratedValue
+    private Long id;
+    @CreationTimestamp
     private Date dateOfPurchase;
-    @NotNull
     private Double purchaseCost;
     private String otherDetails;
     @ManyToOne
-    @JoinColumn(name = "customerId",nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToOne(mappedBy = "customerPurchase")
-    private Transaction transaction;
-    @OneToOne(mappedBy = "customerPurchase")
-    private ProductsAndServices productsAndServices;
-
+    @OneToMany(mappedBy = "customerPurchase")
+    private List<ProductsAndServices> productsAndServices;
 }

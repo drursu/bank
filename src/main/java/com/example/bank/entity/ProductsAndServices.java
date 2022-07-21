@@ -1,23 +1,21 @@
 package com.example.bank.entity;
 
-
-import com.sun.istack.NotNull;
 import lombok.Data;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
 public class ProductsAndServices {
 
     @Id
+    @GeneratedValue
+    private Long id;
     private String productAndServicesCode;
     private String productAndServicesDescription;
-    @OneToOne
-    @JoinColumn(name = "customerPurchaseId")
+    @ManyToOne
+    @JoinColumn(name = "customer_purchase_id")
     private CustomerPurchase customerPurchase;
-    @OneToMany(mappedBy = "productsAndServices")
-    private List<Merchant> merchants;
-
+    @ManyToOne
+    @JoinColumn(name = "merchant_id")
+    private Merchant merchant;
 }

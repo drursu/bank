@@ -3,23 +3,19 @@ package com.example.bank.controller;
 import com.example.bank.DTO.AccountDTO;
 import com.example.bank.entity.Account;
 import com.example.bank.service.Impl.AccountServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/account")
+@RequiredArgsConstructor
+@RequestMapping("/accounts")
 public class AccountController {
 
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    AccountServiceImpl accountService;
+    private final ModelMapper modelMapper;
+    private final AccountServiceImpl accountService;
 
     @GetMapping
     public List<AccountDTO> getAllAccounts() {
@@ -29,38 +25,40 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public Optional<AccountDTO> getAccountById(@PathVariable("id") Long id) {
+    public AccountDTO getAccountById(@PathVariable("id") Long id) {
 
-        Optional<Account> account = accountService.getAccountById(id);
+
+        Account account = accountService.getAccountById(id);
         AccountDTO accountDTO = modelMapper.map(account, AccountDTO.class);
 
-        return Optional.ofNullable(accountDTO);
+        return accountDTO;
+
     }
 
     @PostMapping
-    public ResponseEntity<AccountDTO> saveAccount(@RequestBody AccountDTO accountDTO) {
+    public AccountDTO saveAccount(@RequestBody AccountDTO accountDTO) {
 
-        Account accountPostRequest = modelMapper.map(accountDTO,Account.class);
+        Account accountPostRequest = modelMapper.map(accountDTO, Account.class);
         Account accountPostResponse = accountService.saveOrUpdateAccount(accountPostRequest);
-        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse,AccountDTO.class);
+        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse, AccountDTO.class);
 
-        return new ResponseEntity<>(accountDTOResponse, HttpStatus.CREATED);
+        return accountDTOResponse;
     }
 
     @PutMapping
-    public ResponseEntity<AccountDTO> updateAccount(@RequestBody AccountDTO accountDTO) {
+    public AccountDTO updateAccount(@RequestBody AccountDTO accountDTO) {
 
-        Account accountPostRequest = modelMapper.map(accountDTO,Account.class);
+        Account accountPostRequest = modelMapper.map(accountDTO, Account.class);
         Account accountPostResponse = accountService.updateAccount(accountPostRequest);
-        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse,AccountDTO.class);
+        AccountDTO accountDTOResponse = modelMapper.map(accountPostResponse, AccountDTO.class);
 
-        return ResponseEntity.ok().body(accountDTOResponse);
+        return accountDTOResponse;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable(name = "id") Long id){
+    public String deleteAccount(@PathVariable(name = "id") Long id) {
         accountService.deleteAccount(id);
-        return new ResponseEntity<>("Account deleted !", HttpStatus.OK);
+        return "Account deleted !";
     }
 
 }

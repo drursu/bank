@@ -1,41 +1,60 @@
 package com.example.bank.service.Impl;
 
-import com.example.bank.entity.Account;
 import com.example.bank.entity.Merchant;
-import com.example.bank.repository.AccountRepository;
+import com.example.bank.exception.ResourceNotDeletedException;
+import com.example.bank.exception.ResourceNotFoundException;
+import com.example.bank.exception.ResourceNotSavedException;
 import com.example.bank.repository.MerchantRepository;
 import com.example.bank.service.Interface.MerchantService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class MerchantServiceImpl implements MerchantService {
-    @Autowired
-    MerchantRepository merchantRepository;
+
+    private final MerchantRepository merchantRepository;
 
     public List<Merchant> getAllMerchants() {
         return merchantRepository.findAll();
     }
 
-    public Optional<Merchant> getMerchantById(Long id) {
-        return merchantRepository.findById(id);
+    public Merchant getMerchantById(Long id) {
+
+        return merchantRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Merchant with id: " + id + " does not exist!"));
     }
 
     public Merchant saveOrUpdateMerchant(Merchant merchant) {
-        merchantRepository.save(merchant);
+
+        try {
+            merchantRepository.save(merchant);
+
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Merchant could not be saved!");
+        }
+
         return merchant;
     }
 
     public void deleteMerchant(Long id) {
-        merchantRepository.deleteById(id);
+
+        try {
+            merchantRepository.deleteById(id);
+        } catch (ResourceNotDeletedException exception) {
+            throw new ResourceNotDeletedException("Merchant could not be deleted!");
+        }
     }
 
     public Merchant updateMerchant(Merchant merchant) {
-        merchantRepository.save(merchant);
+
+        try {
+            merchantRepository.save(merchant);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Merchant could not be updated!");
+        }
+
         return merchant;
     }
 }

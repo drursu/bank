@@ -1,40 +1,59 @@
 package com.example.bank.service.Impl;
 
 import com.example.bank.entity.Account;
+import com.example.bank.exception.ResourceNotDeletedException;
+import com.example.bank.exception.ResourceNotFoundException;
+import com.example.bank.exception.ResourceNotSavedException;
 import com.example.bank.repository.AccountRepository;
 import com.example.bank.service.Interface.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    @Autowired
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
 
-    public Optional<Account> getAccountById(Long id) {
-        return accountRepository.findById(id);
+    public Account getAccountById(Long id) {
+
+        return accountRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Account with id: " + id + " does not exist!"));
     }
 
     public Account saveOrUpdateAccount(Account account) {
-        accountRepository.save(account);
+
+        try {
+            accountRepository.save(account);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Account could not be saved!");
+        }
+
         return account;
     }
 
     public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
+
+        try {
+            accountRepository.deleteById(id);
+        } catch (ResourceNotDeletedException exception) {
+            throw new ResourceNotDeletedException("Account could not be deleted!");
+        }
     }
 
     public Account updateAccount(Account account) {
-         accountRepository.save(account);
+
+        try {
+            accountRepository.save(account);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Account could not be updated!");
+        }
+
         return account;
     }
-
 }

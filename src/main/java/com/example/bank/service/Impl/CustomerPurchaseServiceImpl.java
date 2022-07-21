@@ -1,41 +1,59 @@
 package com.example.bank.service.Impl;
 
-import com.example.bank.entity.Account;
 import com.example.bank.entity.CustomerPurchase;
-import com.example.bank.repository.AccountRepository;
+import com.example.bank.exception.ResourceNotDeletedException;
+import com.example.bank.exception.ResourceNotFoundException;
+import com.example.bank.exception.ResourceNotSavedException;
 import com.example.bank.repository.CustomerPurchaseRepository;
 import com.example.bank.service.Interface.CustomerPurchaseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class CustomerPurchaseServiceImpl implements CustomerPurchaseService {
-    @Autowired
-    CustomerPurchaseRepository customerPurchaseRepository;
+
+    private final CustomerPurchaseRepository customerPurchaseRepository;
 
     public List<CustomerPurchase> getAllCustomerPurchases() {
         return customerPurchaseRepository.findAll();
     }
 
-    public Optional<CustomerPurchase> getCustomerPurchaseById(Long id) {
-        return customerPurchaseRepository.findById(id);
+    public CustomerPurchase getCustomerPurchaseById(Long id) {
+
+        return customerPurchaseRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Customer Purchase with id: " + id + " does not exist!"));
     }
 
     public CustomerPurchase saveOrUpdateCustomerPurchase(CustomerPurchase customerPurchase) {
-        customerPurchaseRepository.save(customerPurchase);
+
+        try {
+            customerPurchaseRepository.save(customerPurchase);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Customer Purchase could not be saved!");
+        }
+
         return customerPurchase;
     }
 
     public void deleteCustomerPurchase(Long id) {
-        customerPurchaseRepository.deleteById(id);
+
+        try {
+            customerPurchaseRepository.deleteById(id);
+        } catch (ResourceNotDeletedException exception) {
+            throw new ResourceNotDeletedException("Customer Purchase could not be deleted!");
+        }
     }
 
     public CustomerPurchase updateCustomerPurchase(CustomerPurchase customerPurchase) {
-        customerPurchaseRepository.save(customerPurchase);
+
+        try {
+            customerPurchaseRepository.save(customerPurchase);
+        } catch (ResourceNotSavedException exception) {
+            throw new ResourceNotSavedException("Customer Purchase could not be updated!");
+        }
+
         return customerPurchase;
     }
 }

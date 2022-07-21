@@ -1,11 +1,8 @@
 package com.example.bank.entity;
 
-
 import com.example.bank.enums.CustomerType;
-import com.sun.istack.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -15,20 +12,19 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long customerId;
-    @NotNull
+    @GeneratedValue
+    private Long id;
+    @Column(nullable = false)
     private String customerName;
-    @NotNull
+    @Column(nullable = false)
     private String customerPhoneNumber;
-    @NotNull
+    @Column(nullable = false)
     private String customerEmailAddress;
     @CreationTimestamp
     private Date customerRegistrationDate;
-    @NotNull
-    @Column(unique=true)
+    @Column(unique=true,nullable = false)
     private String username;
-    @NotNull
+    @Column(nullable = false)
     private String password;
     private String otherDetails;
     @Enumerated(EnumType.STRING)
@@ -37,5 +33,4 @@ public class Customer {
     private List<Account> accounts;
     @OneToMany(mappedBy = "customer")
     private List<CustomerPurchase> customerPurchases;
-
 }
